@@ -12,7 +12,7 @@ import matplotlib.pyplot as plt
 class presenter:
 
     def __init__(self):
-        self.filepath = "/tmp/atf_test/results_yaml/"
+        self.filepath = "~"
         self.yaml_file = {}
         self.testblock = []
         self.metric = set()
@@ -109,8 +109,8 @@ class presenter:
         if(single):
             print self.metric
             for metric in self.metric:
-                (y_pos, means, devs) = self.calculate_data(metric)
-                plt.bar(y_pos, means, yerr=devs, alpha=0.5, color='red')
+                (y_pos, means, devs, data) = self.calculate_data(metric)
+                plt.boxplot(data) #plt.bar(y_pos, means, yerr=devs, alpha=0.5, color='red')
                 rects = plt.bar(y_pos, means, yerr=devs, alpha=0.5, color='red')
                 for rect in rects:
                     height = rect.get_height()
@@ -126,19 +126,29 @@ class presenter:
             self.metric.remove('time')
             #print "metric: ",self.metric
             counter = 0
-            fig, axarr = plt.subplots(len(self.metric), sharex=True)
+            fig, axarr = plt.subplots(len(self.metric), sharex=True)            
             for metric in self.metric:
-                (y_pos, means, devs) = self.calculate_data(metric)
-                axarr[counter].bar(y_pos, means, yerr=devs, alpha=0.5, color='red')
-                rects = axarr[counter].bar(y_pos, means, yerr=devs, alpha=0.5, color='red')
+                (y_pos, means, devs, data) = self.calculate_data(metric)
+                axarr[counter].boxplot(data) #bar(y_pos, means, yerr=devs, alpha=0.5, color='red')
+                axarr[counter].plot(y_pos+1, means, "r_", markersize=16)
+                rects = axarr[counter].boxplot(data) #.bar(y_pos, means, yerr=devs, alpha=0.5, color='red')
                 axarr[counter].set_title(metric)
-                axarr[counter].set_xticks(y_pos+0.8/2)
+                axarr[counter].set_xticks(y_pos+1)#0.8/2)
                 axarr[counter].set_xticklabels(self.testnames, rotation='vertical')
-                for rect in rects:
-                    height = rect.get_height()
-                    axarr[counter].text(rect.get_x() + rect.get_width()/2., 1.05*height,
-                            '%.1f' % round(height, 1),
-                            ha='center', va='bottom')
+                #for rect in rects:
+                rect = rects["boxes"][0].get_clip_box()
+                height = abs(rect.get_points()[0][1] - rect.get_points()[1][1])
+                width = abs(rect.get_points()[0][0] - rect.get_points()[1][0])
+                xpos = rect.get_points()[0][0]
+                print str(xpos) + ", " + str(height)    
+                fig_detail = plt.figure()     
+                plt.title(metric)      
+                plt.boxplot(data)
+                plt.plot(y_pos+1, means, "r_", markersize=16)
+                plt.xticks(y_pos+1, self.testnames, rotation='vertical')
+                #axarr[counter].text(xpos + width/2., 1.05*height,
+                #        '%.1f' % round(height, 1),
+                #        ha='center', va='bottom')
                 counter += 1
             plt.tight_layout()
             plt.show()
@@ -147,6 +157,7 @@ class presenter:
     def calculate_data(self, metric):
         means = []
         devs = []
+        testdata = []
         for testname in sorted(self.tests, key=lambda ts : int(ts.split('_')[2].replace('r', ''))): # Magic!
             data = self.tests[testname]
             # print "-------------------------------------------"
@@ -159,6 +170,7 @@ class presenter:
             #for mean in data[1][metric]:
             #print "dev", numpy.std(data[1][metric]), "from mean", data[1][metric]
             devs.append(numpy.std(data[1][metric]))
+            testdata.append(data[1][metric])
             for test in self.testlist:
                 #print "\n-------------------\ntest:", test, "\ntestname:", testname, "\n data: \n", data
                 if testname in test:
@@ -173,15 +185,16 @@ class presenter:
         # print "y pos", y_pos
         # print "height", means
         # print "deviation", devs
-        return (y_pos, means, devs)
+        return (y_pos, means, devs, testdata)
 
 if __name__ == '__main__':
     parser = optparse.OptionParser()
     parser.add_option('-s', '--single', dest='single', help='Print all plots in single windows', default=False, action="store_true")
+    parser.add_option('-p', '--path', dest='path', help='Target Path', default="~")
     (options, args) = parser.parse_args()
 
     p = presenter()
-    Path = "/home/fmw-hb/Documents/hannes_test_load/results_yaml/"#"/home/fmw-hb/Desktop/hannes_test_shortterm/results_yaml/"#"/tmp/hannes_test_new/results_yaml/"
+    Path = options.path
     filelist = os.listdir(Path)
     p.import_testnames(Path.replace('yaml', 'json')+"test_list.json")
 
