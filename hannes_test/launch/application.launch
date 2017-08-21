@@ -2,48 +2,34 @@
 <launch>
     <!-- Add all launch files that you want to run additionally to your robot bringup like moveit, etc... -->
     <arg name="robot" default="cob4-2"/>
-    <arg name="robot_env" default="saturn-ingolstadt"/>
-    <!--arg name="pkg_env_config" default="$(find msh_env_config)"/-->
-    <!--arg name="pkg_nav_config" default="$(find msh_navigation_config)"/-->
-    <!--arg name="pkg_nav_env_config" default="$(find msh_navigation_config)"/-->
-    <!--arg name="env-script" default="$(find cob_bringup)/env.sh"/-->
-    
-    
-    <arg name="int_res" default="0.5"/>
-    <arg name="part_num" default="100"/>
-    <arg name="ndt_match" default="false"/>
-    <arg name="ndt_type" default="EWMA" />
-    <arg name="gain" default="3"/>
-    <arg name="counter" default="1"/>
+    <arg name="robot_env" default="ipa-apartment"/>
+
     <arg name="mapping" default="1.0"/>
-    <arg name="stmgain" default="0.5"/>
+    <!--<arg name="stmgain" default="0.5"/>-->
     <arg name="optimize_pose" default="false"/>   
 
-    <node name="bagfile" pkg="rosbag" type="play" args="-r 1.25 --clock --start 38 /home/srd-pz/bags/filtered3_ekf.bag" output="screen"/>  
-    
-    <!--include file="$(find cob_bringup)/drivers/scan_unifier.launch">
-			<arg name="robot" value="cob4-2"/>
-    </include-->
-    
-    <!--include file="$(find msh_bringup)/launch/rviz.launch">
-			<arg name="robot" value="cob4-2"/>
-    </include-->
+    <param name ="/use_sim_time" value="true"/>
+    <node name="bagfile" pkg="rosbag" type="play" args="--clock --start 38 /home/test/Desktop/filtered3_ekf.bag" output="screen"/>
 
     <!-- start rviz with configuration -->
-    <!--node pkg="rviz" type="rviz" name="$(anon rviz)" respawn="false" output="screen" /-->   
+    <node pkg="rviz" type="rviz" name="$(anon rviz)" respawn="false" output="screen" />
 
+    <!--
+    <node pkg="rqt_tf_tree" type="rqt_tf_tree" name="$(anon rqt_tf_tree)" respawn="false" output="screen" />
+    -->
     
     <!-- ipa SLAM -->
     <include file="$(find ipa_long_term_slam)/launch/long_term_slam.launch">
         <arg name="init_from_backup" value="false"/>
         <arg name="init_from_static_map" value="true"/>
         <arg name="robot" value="cob4-2"/>
-        <arg name="robot_env" value="saturn-ingolstadt" />
-        <arg name="pkg_env_config" value="/home/srd-pz/bags/saturn-ingolstadt"/>
-        <arg name="map" value="/home/srd-pz/bags/saturn-ingolstadt/map.yaml" />
+        <arg name="robot_env" value="ipa-production-plant" />
+        <arg name="pkg_env_config" value="/home/test/Desktop/saturn-ingolstadt/"/>
+        <arg name="map" value="/home/test/Desktop/saturn-ingolstadt/map.yaml" />
+        <!--
         <arg name="map_res" value="$(arg int_res)"/>
         <arg name="part_num" value="$(arg part_num)"/>
-        <arg name="ndt_type" value="$(arg ndt_type)"/>
+        <arg name="ndt_type" value="$(arg ndt_type)"/>-->
     </include> 
    
 </launch>

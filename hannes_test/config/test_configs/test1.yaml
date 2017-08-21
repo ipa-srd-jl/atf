@@ -4,16 +4,16 @@ testblock_small:
   path_length:
     - root_frame: map
       measured_frame: base_link
-#      groundtruth: 50.0 #for 230 s
-#      groundtruth_epsilon: 10.0
+      groundtruth: 50.0 #for 230 s
+      groundtruth_epsilon: 10.0
   distance:
     - root_frame: base_link_ekf
-      measured_frame: base_link 
-  localization:
-    - root_frame: base_link_ekf
-      measured_frame: base_link 
-      groundtruth: 0.0
-      groundtruth_epsilon: 2.0
+      measured_frame: base_link
+#  localization:
+#    - root_frame: base_link_ekf
+#      measured_frame: base_link
+#      groundtruth: 0.0
+#      groundtruth_epsilon: 2.0
   resource_cpu:
     - nodes:
         -  slam

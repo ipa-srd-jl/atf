@@ -15,7 +15,7 @@ class robot_maker():
         self.ndt_types = ["EWMA", "IGMM"]
         self.gain = [3] #2, 3, 5, 8]
         self.dyn_gain = [0.5]
-        self.file_path = "/home/srd-pz/atf/src/atf/hannes_test/config/robot_gen/"  #'/home/fmw-hb/atf_catkin_ws/src/atf/hannes_test/config/robots/'
+        self.file_path = "/home/test/my_catkin_ws/src/atf/hannes_test/config/robots/"  #'/home/fmw-hb/atf_catkin_ws/src/atf/hannes_test/config/robots/'
         self.robots = ""
 
 
